@@ -569,7 +569,8 @@ image::images/terminate_errors.png[width=800]
 
 . Stop the simulator once you have verified the data.
 
-## Lab 7 - CDSW: Train the model
+
+## Lab 8 - CDSW: Train the model
 
 In this and the following lab, you will wear the hat of a Data Scientist. You will write the model code, train it several times and finally deploy the model to Production. All within 30 minutes!
 
@@ -577,7 +578,7 @@ In this and the following lab, you will wear the hat of a Data Scientist. You wi
 
 Open CDSW Web UI and click on *sign up for a new account*. As you're the first user to login into CDSW, you are granted admin privileges. Make sure you use the same username you used when you logged into HUE, in Lab 0. The usernames here must match.
 
-![](./images/image2.png)
+![](./images/login_cdsw.png)
 
 Navigate to the CDSW **Admin** page to fine tune the environment:
 - in the **Engines** tab, add in _Engines Profiles_ a new engine (docker image) with 2 vCPUs and 4 GB RAM, while deleting the default engine.
@@ -586,7 +587,7 @@ Navigate to the CDSW **Admin** page to fine tune the environment:
    HADOOP_CONF_DIR = /etc/hadoop/conf/
    ```
 
-![](./images/image16.png)
+![](./images/cdsw_admin.png)
 
 Please note: this env variable is not required for a CDH 5 cluster.
 
@@ -595,11 +596,11 @@ Please note: this env variable is not required for a CDH 5 cluster.
 Return to the main page and click on **New Project**, using this GitHub project as the source: `https://github.com/fabiog1901/IoT-predictive-maintenance`.
 
 
-![](./images/image8.png)
+![](./images/create_new_project.png)
 
 Now that your project has been created, click on **Open Workbench** and start a Python3 Session
 
-![](./images/image19.png)
+![](./images/start_new_session.png)
 
 Once the Engine is ready, run the following command to install some required libraries:
 ```
@@ -610,7 +611,7 @@ The project comes with a historical dataset. Copy this dataset into HDFS:
 !hdfs dfs -put data/historical_iot.txt /user/$HADOOP_USER_NAME
 ```
 
-![](./images/image22.png)
+![](./images/install_modules.png)
 
 You're now ready to run the Experiment to train the model on your historical data.
 
@@ -656,17 +657,17 @@ numTrees = 20 numDepth = 20
 ```
 From the menu, select `Run -> Run Experiments...`. Now, in the background, the Data Science Workbench environment will spin up a new docker container, where this program will run. 
 
-![](./images/image23.png)
+![](./images/run_experiment.png)
 
 Go back to the **Projects** page in CDSW, and hit the **Experiments** button.
 
 If the Status indicates ‘Running’, you have to wait till the run is completed. In case the status is ‘Build Failed’ or ‘Failed’, check the log information. This is accessible by clicking on the run number of your experiments. There you can find the session log, as well as the build information.
 
-![](./images/image15.png)
+![](./images/experiment_log.png)
 
 In case your status indicates ‘Success’, you should be able to see the auroc (Area Under the Curve) model quality indicator. It might be that this value is hidden by the CDSW user interface. In that case, click on the ‘3 metrics’ links, and select the auroc field. It might be needed to de-select some other fields, since the interface can only show 3 metrics at the same time.
 
-![](./images/image12.png)
+![](./images/experiment_result.png)
 
 In this example, ~0.8478. Not bad, but maybe there are better hyper parameter values available.
 
@@ -680,16 +681,16 @@ NumTrees NumDepth
 ```
 When all runs have completed successfully, check which parameters had the best quality (best predictive value). This is represented by the highest ‘area under the curve’, auroc metric.
 
-![](./images/image27.png)
+![](./images/experiment_more_result.png)
 
 **STEP 5** : Save the best model to your environment
 
 Select the run number with the best predictive value, in this case, experiment 2. In the Overview screen of the experiment, you can see that the model in spark format, is captured in the file `iot_model.pkl`. Select this file and hit the **Add to Project** button. This will copy the model to your project directory.
 
-![](./images/image13.png)
-![](./images/image1.png)
+![](./images/save_model.png)
+![](./images/find_model.png)
 
-## Lab 8 - CDSW: Deploy the model
+## Lab 9 - CDSW: Deploy the model
 
 **STEP 1** : Examine the program `cdsw.iot_model.py`
 
@@ -702,7 +703,7 @@ Before deploying the model, try it out in the Workbench: launch a Python3 engine
 predict({"feature": "0, 65, 0, 137, 21.95, 83, 19.42, 111, 9.4, 6, 3.43, 4"})
 ```
 
-![](./images/image18.png)
+![](./images/run_model2.png)
 
 The functions returns successfully, so we know we can now deploy the model. You can now stop the engine.
 
@@ -721,7 +722,7 @@ Engine:        2 vCPU / 4 GB Memory
 Replicas:      1
 ```
 
-![](./images/image6.png)
+![](./images/define_model.png)
 
 If all parameters are set, you can hit the **Deploy Model** button. Wait till the model is deployed. This will take several minutes.
 
@@ -731,7 +732,7 @@ After several minutes, your model should get to the **Deployed** state. Now, cli
 
 The green color with success is telling that our REST call to the model is technically working. And if you examine the response: `{"result": 1}`, it returns a 1, which mean that machine with these features is likely to stay healthy.
 
-![](./images/image11.png)
+![](./images/test_model2.png)
 
 Now, lets change the input parameters and call the predict function again. Put the following values in the Input field:
 ```
@@ -739,7 +740,7 @@ Now, lets change the input parameters and call the predict function again. Put t
   "feature": "0, 95, 0, 88, 26.62, 75, 21.05, 115, 8.65, 5, 3.32, 3"
 }
 ```
-With these input parameters, the model returns 0, which means that the machine is likely to break. Take a note of the **AccessKey** as you will need this for lab 6.
+With these input parameters, the model returns 0, which means that the machine is likely to break. Take a note of the **AccessKey** as you will need this for lab 10.
 
 [[lab_10, Lab 10]]
 == Lab 10 - Use NiFi to call the CDSW model endpoint and save to Kudu
