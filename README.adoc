@@ -578,7 +578,7 @@ In this and the following lab, you will wear the hat of a Data Scientist. You wi
 
 Open CDSW Web UI and click on *sign up for a new account*. As you're the first user to login into CDSW, you are granted admin privileges. Make sure you use the same username you used when you logged into HUE, in Lab 0. The usernames here must match.
 
-![](./images/login_cdsw.png)
+image::images/login_cdsw.png[width=800]
 
 Navigate to the CDSW **Admin** page to fine tune the environment:
 - in the **Engines** tab, add in _Engines Profiles_ a new engine (docker image) with 2 vCPUs and 4 GB RAM, while deleting the default engine.
@@ -587,7 +587,7 @@ Navigate to the CDSW **Admin** page to fine tune the environment:
    HADOOP_CONF_DIR = /etc/hadoop/conf/
    ```
 
-![](./images/cdsw_admin.png)
+image::images/cdsw_admin.png[width=800]
 
 Please note: this env variable is not required for a CDH 5 cluster.
 
@@ -595,12 +595,11 @@ Please note: this env variable is not required for a CDH 5 cluster.
 
 Return to the main page and click on **New Project**, using this GitHub project as the source: `https://github.com/fabiog1901/IoT-predictive-maintenance`.
 
-
-![](./images/create_new_project.png)
+image::images/create_new_project.png[width=800]
 
 Now that your project has been created, click on **Open Workbench** and start a Python3 Session
 
-![](./images/start_new_session.png)
+image::images/start_new_session.png[width=800]
 
 Once the Engine is ready, run the following command to install some required libraries:
 ```
@@ -611,7 +610,7 @@ The project comes with a historical dataset. Copy this dataset into HDFS:
 !hdfs dfs -put data/historical_iot.txt /user/$HADOOP_USER_NAME
 ```
 
-![](./images/install_modules.png)
+image::images/install_module.png[width=800]
 
 You're now ready to run the Experiment to train the model on your historical data.
 
@@ -657,17 +656,17 @@ numTrees = 20 numDepth = 20
 ```
 From the menu, select `Run -> Run Experiments...`. Now, in the background, the Data Science Workbench environment will spin up a new docker container, where this program will run. 
 
-![](./images/run_experiment.png)
+image::images/run_experiment.png[width=800]
 
 Go back to the **Projects** page in CDSW, and hit the **Experiments** button.
 
 If the Status indicates ‘Running’, you have to wait till the run is completed. In case the status is ‘Build Failed’ or ‘Failed’, check the log information. This is accessible by clicking on the run number of your experiments. There you can find the session log, as well as the build information.
 
-![](./images/experiment_log.png)
+image::images/experiment_log.png[width=800]
 
 In case your status indicates ‘Success’, you should be able to see the auroc (Area Under the Curve) model quality indicator. It might be that this value is hidden by the CDSW user interface. In that case, click on the ‘3 metrics’ links, and select the auroc field. It might be needed to de-select some other fields, since the interface can only show 3 metrics at the same time.
 
-![](./images/experiment_result.png)
+image::images/experiment_result.png[width=800]
 
 In this example, ~0.8478. Not bad, but maybe there are better hyper parameter values available.
 
@@ -681,14 +680,14 @@ NumTrees NumDepth
 ```
 When all runs have completed successfully, check which parameters had the best quality (best predictive value). This is represented by the highest ‘area under the curve’, auroc metric.
 
-![](./images/experiment_more_result.png)
+image::images/experiment_more_result.png[width=800]
 
 **STEP 5** : Save the best model to your environment
 
 Select the run number with the best predictive value, in this case, experiment 2. In the Overview screen of the experiment, you can see that the model in spark format, is captured in the file `iot_model.pkl`. Select this file and hit the **Add to Project** button. This will copy the model to your project directory.
 
-![](./images/save_model.png)
-![](./images/find_model.png)
+image::images/save_model.png[width=800]
+image::images/find_model.png[width=800]
 
 ## Lab 9 - CDSW: Deploy the model
 
@@ -703,7 +702,7 @@ Before deploying the model, try it out in the Workbench: launch a Python3 engine
 predict({"feature": "0, 65, 0, 137, 21.95, 83, 19.42, 111, 9.4, 6, 3.43, 4"})
 ```
 
-![](./images/run_model2.png)
+image::images/run_model2.png[width=800]
 
 The functions returns successfully, so we know we can now deploy the model. You can now stop the engine.
 
@@ -722,7 +721,7 @@ Engine:        2 vCPU / 4 GB Memory
 Replicas:      1
 ```
 
-![](./images/define_model.png)
+image::images/define_model.png[width=800]
 
 If all parameters are set, you can hit the **Deploy Model** button. Wait till the model is deployed. This will take several minutes.
 
@@ -732,7 +731,7 @@ After several minutes, your model should get to the **Deployed** state. Now, cli
 
 The green color with success is telling that our REST call to the model is technically working. And if you examine the response: `{"result": 1}`, it returns a 1, which mean that machine with these features is likely to stay healthy.
 
-![](./images/test_model2.png)
+image::images/test_model2.png[width=800]
 
 Now, lets change the input parameters and call the predict function again. Put the following values in the Input field:
 ```
