@@ -219,6 +219,8 @@ image::images/operate_panel.png[width=300]
 +
 image::images/input_port_id.png[width=800]
 
+**STEP 4** :  Connect ComsumeMQTT to RPG
+
 . Back to the Flow Designer, connect the ConsumeMQTT processor to the RPG. The connection requires an ID and you can paste here the ID you copied from the Input Port.
 +
 image::images/connect_to_rpg.png[width=800]
@@ -226,6 +228,8 @@ image::images/connect_to_rpg.png[width=800]
 . The Flow is now complete, but before publishing it, create the Bucket in the _NiFi Registry_ so that all versions of your flows are stored for review and audit. Open the NiFi Registry at `\http://<public_dns>:18080/nifi-registry`, click on the wrench/spanner icon (image:images/spanner_icon.png[width=20]) on the top-right corner on and create a bucket called `IoT`.
 +
 image::images/create_bucket.png[width=800]
+
+**STEP 5** : publish the flow 
 
 . You can now publish the flow for the MiNiFi agent to automatically pick up. Click *Publish*, add a descriptive comment for your changes and click *Apply*.
 +
@@ -240,6 +244,7 @@ image::images/flow_in_nifi_registry.png[width=800]
 
 image::NiFiSettingsSetNiFiRegistry.png[width=800]
 
+**STEP 6** :  test the edge flow.
 
 . At this point, you can test the edge flow up until NiFi. Start the NiFi (ExecuteProcess) simulator again and confirm you can see the messages queued in NiFi.
 +
@@ -252,9 +257,11 @@ image::images/queued_events.png[width=300]
 
 The data produced by the temperature sensors is described by the schema in file `link:https://raw.githubusercontent.com/tspannhw/edge2ai-workshop/master/sensor.avsc[sensor.avsc]`. In this lab we will register this schema in Schema Registry so that our flows in NiFi can refer to schema using an unified service. This will also allow us to evolve the schema in the future, if needed, keeping older versions under version control, so that existing flows and flowfiles will continue to work.
 
+**STEP 1** :  copy schema to Schema Registry
+
 . Go the following URL, which contains the schema definition we'll use for this lab. Select all contents of the page and copy it.
 +
-`link:https://raw.githubusercontent.com/tspannhw/edge2ai-workshop/master/sensor.avsc[https://raw.githubusercontent.com/tspannhw/edge2ai-workshop/master/sensor.avsc, window="_blank"]`
+`link:https://github.com/wangxf2000/edge2ai-workshop/blob/master/sensor.avsc[https://github.com/wangxf2000/edge2ai-workshop/blob/master/sensor.avsc, window="_blank"]`
 
 . In the Schema Registry Web UI, click the `+` sign to register a new schema.
 
@@ -281,7 +288,7 @@ image::images/register_schema.png[width=800]
 
 In this lab, you will create a NiFi flow to receive the data from all gateways and push it to **Kafka**.
 
-=== Creating a Process Group
+**STEP 1** :  Creating a Process Group
 
 Before we start building our flow, let's create a Process Group to help organizing the flows in the NiFi canvas and also to enable flow version control.
 
@@ -347,7 +354,7 @@ Schema Registry:        HortonworksSchemaRegistry
 +
 image::images/controller_services.png[width=800]
 
-=== Creating the flow
+**STEP 2** :   Creating the flow
 
 . Double-click on the newly created process group to expand it.
 
@@ -485,6 +492,8 @@ We could use our *Process Sensor Data* flow in NiFi to filter out those problema
 
 We've noticed that the problem always happen with the temperatures in measurements `sensor_0` and `sensor_1`, only. If any of these two temperatures are *greater than 500* we *must discard* the entire sensor reading. If both of these temperatures are in the normal range (< 500) we can guarantee that all temperatures reported are correct and can be sent to NiFi.
 
+**STEP 1** :  add EvaluateJSONPath processor
+
 . Go to the CEM Web UI and add a new processor to the canvas. In the Filter box of the dialog that appears, type "JsonPath". Select the _EvaluateJSONPath_ processor and click *Add*.
 
 . Double-click on the new processor and configure it with the following properties:
@@ -510,6 +519,8 @@ image::images/extract_attributes.png[width=800]
 
 . Click *Apply* to save the processor configuration.
 
+**STEP 2** :  add RouteOnAttribute processor
+
 . Drag one more new processor to the canvas. In the Filter box of the dialog that appears, type "Route". Select the _RouteOnAttribute_ processor and click *Add*.
 +
 image::images/route_on_attribute.png[width=800]
@@ -533,6 +544,8 @@ Route Strategy: Route to Property name
 image::images/route_on_attribute_config.png[width=800]
 
 . Click *Apply* to save the processor configuration.
+
+**STEP 3** :  connect
 
 . Reconnect the _ConsumeMQTT_ processor to the _Extract sensor_0 and sensor1 values_ processor:
 .. Click on the existing connection between _ConsumeMQTT_ and the _RPG_ to select it.
@@ -572,11 +585,15 @@ image::images/create_last_connection.png[width=800]
 +
 image::images/terminate_errors.png[width=800]
 
+**STEP 4** :  publish CEM
+
 . Finally, click on *ACTIONS > Publish...* on the CEM canvas, enter a descriptive comment like "Added filtering of erroneous readings" and click *Publish*.
 
 . Start the simulator again.
 
 . Go to the NiFi Web UI and confirm that the data is flowing without errors within the *Process Sensor Data* process group. Refresh a few times and check that the numbers are changing.
+
+**STEP 5** :  test
 
 . Use the *EXPLORE* feature on the SMM Web UI to confirm that the bogus readings have been filtered out.
 
@@ -590,6 +607,8 @@ image::images/terminate_errors.png[width=800]
 . The Hue UI should open with the Impala Query Editor by default. If it doesn't, you can always find it by clicking on *Query button > Editor -> Impala*:
 +
 image::images/impala_editor.png[width=800]
+
+**STEP 1** :  Create Kudu table
 
 . First, create the Kudu table. Login into Hue, and in the Impala Query, run this statement:
 +
@@ -800,7 +819,7 @@ In this lab, you will use NiFi to consume the Kafka messages containing the IoT 
 
 In preparation for the workshop we trained and deployed a Machine Learning model on the Cloudera Data Science Workbench (CDSW) running on your cluster. The model API can take a feature vector with the reading for the 12 temperature readings provided by the sensor and predict, based on that vector, if the machine is likely to break or not.
 
-=== Add new Controller Services
+**STEP 1** :  Add new Controller Services
 
 When the sensor data was sent to Kafka using the _PublishKafkaRecord_ processor, we chose to attach the schema information in the header of Kafka messages. Now, instead of hard-coding which schema we should use to read the message, we can leverage that metadata to dynamically load the correct schema for each message.
 
@@ -850,7 +869,7 @@ image::images/additional_controller_services.png[width=800]
 
 . Close the *Process Sensor Data Configuration* page.
 
-=== Create the flow
+**STEP 2** :   Create the flow
 
 We'll now create the flow to read the sensor data from Kafka, execute a model prediction for each of them and write the results to Kudu. At the end of this section you flow should look like the one below:
 
@@ -888,7 +907,7 @@ Headers to Add as Attributes (Regex): schema.*
 +
 image:images/parse_failure_relationship.png[width=500]
 
-==== LookupRecord processor
+**STEP 3** :  LookupRecord processor
 
 . Add a *LookupRecord* processor to the canvas and configure it as shown below:
 +
@@ -926,7 +945,7 @@ request.method: toString('post', 'UTF-8')
 
 . Connect the *Predict machine health* to the same _Funnel_ you had created above. When prompted, check the *failure* relationship for this connection.
 
-==== UpdateRecord processor
+**STEP 4** :  UpdateRecord processor
 
 . Add a *UpdateRecord* processor to the canvas and configure it as shown below:
 +
@@ -957,7 +976,7 @@ Replacement Value Strategy: Record Path Value
 
 . Connect the *Update health flag* to the same _Funnel_ you had created above. When prompted, check the *failure* relationship for this connection.
 
-==== PutKudu processor
+**STEP 5** :  PutKudu processor
 
 . Add a *PutKudu* processor to the canvas and configure it as shown below:
 +
@@ -983,7 +1002,7 @@ Record Reader:    JsonTreeReader - With schema identifier
 
 . Double-click on the *Write to Kudu* processor, go to the *SETTINGS* tab, check the "*success*" relationship in the *AUTOMATICALLY TERMINATED RELATIONSHIPS* section. Click *Apply*.
 
-==== CDSW Access Key
+**STEP 6** :  CDSW Access Key
 
 When we added the *Predict machine health* above, you may have noticed that one of the properties (`request.body`) makes a reference to a variable called `cdsw.access.key`. This is an application key required to authenticate with the CDSW Model API when requesting predictions. So, we need to provide the key to the _LookupRecord_ processor by setting a variable with its value.
 
@@ -1006,7 +1025,7 @@ image::images/access_key_variable.png[width=800]
 . Click *Apply*
 
 
-==== Running the flow
+**STEP 7** :  Running the flow
 
 We're ready not to run and test our flow. Follow the steps below:
 
@@ -1020,6 +1039,8 @@ image::images/kudu_success.png[width=800]
 ## Lab 11 - Fast analytics on fast data with Kudu and Impala
 
 In this lab, you will run some SQL queries using the Impala engine. You can run a report to inform you which machines are likely to break in the near future.
+
+**STEP 1** :  query in Hue
 
 Login into Hue, and run the following statement in the Impala Query
 
