@@ -681,7 +681,7 @@ The project comes with a historical dataset. Copy this dataset into HDFS:
 !hdfs dfs -put data/historical_iot.txt /user/$HADOOP_USER_NAME
 ```
 
-image::images/install_module.png[width=800]
+image::images/install_modules.png[width=800]
 
 You're now ready to run the Experiment to train the model on your historical data.
 
@@ -1059,6 +1059,9 @@ image::images/query_data.png[width=800]
 * link:https://medium.freecodecamp.org/building-an-iiot-system-using-apache-nifi-mqtt-and-raspberry-pi-ce1d6ed565bc[Original blog by Abdelkrim Hadjidj]
 * This workshop was based on the following work by Andre Araujo:
 ** https://github.com/asdaraujo/edge2ai-workshop
+
+* This workshop was based on the following work by Timothy Spann:
+** https://github.com/tspannhw/edge2ai-workshop 
 
 * That workshop was based on the following work by Fabio Ghirardello:
 ** https://github.com/fabiog1901/IoT-predictive-maintenance
