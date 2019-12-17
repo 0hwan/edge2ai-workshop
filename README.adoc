@@ -71,7 +71,7 @@ http://hostname:10080/efm/swagger/
 * *Lab 15* - Use SRM to simplify Kafka Replication
 
 
-===== Pre-requisites
+=== Pre-requisites
 
 * Laptop with a supported OS (Windows 7 not supported).
 * A modern browser like Google Chrome or Firefox (IE not supported).
@@ -106,8 +106,8 @@ Below a screenshot of Chrome open with 8 tabs, one for each service.
 
 image::images/browser.png[width=800]
 
-[[lab_1,Lab 1]]
-## Configuring the NiFi flow and Consuming the Meetup RSVP data
+[[lab_1, Lab 1]]
+== Lab 1 -  Configuring the NiFi flow and Consuming the Meetup RSVP data
 
 ### Build NiFi flow
 
@@ -133,7 +133,7 @@ Let's get started... Open [NiFi UI](http://<public_dns>:8080/nifi/) and follow t
 
 image::images/cdfprocessgroup.png[width=800]
 
-- Step 2: Go to [NiFi Registry](http://demo.cloudera.com:61080/nifi-registry/explorer/grid-list) and create a new bucket
+- Step 2: Go to [NiFi Registry](http://<public_dns>:18080/nifi-registry/) and create a new bucket
   - Click on the little wrench icon at the top right corner
   - Click on the **NEW BUCKET** button
   - Name the bucket **workshop**
@@ -207,7 +207,7 @@ image::images/evaluatejsonpathproperties1.png[width=800]
 image::images/commit-1.png[width=800]
 image::images/commit-2.png[width=800]
 
-If you visit the [NiFi Registry UI](http://demo.cloudera.com:61080/nifi-registry/explorer/grid-list) again you should see your commit.
+If you visit the [NiFi Registry UI](http://<public_dns>:18080/nifi-registry/) again you should see your commit.
 
 image::images/commit-3.png[width=800]
 
