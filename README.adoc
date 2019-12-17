@@ -113,7 +113,7 @@ image::images/browser.png[width=800]
 
 In order to have a streaming source available for our workshop, we are going to make use of the publicly available Meetup's API and connect to their WebSocket.
 
-The API documentation is available [here](https://www.meetup.com/meetup_api/docs/stream/2/event_comments/#websockets): https://www.meetup.com/meetup_api/docs/stream/2/event_comments/#websockets
+The API documentation is available [here](https://www.meetup.com/meetup_api/docs/stream/2/event_comments/#websockets) : https://www.meetup.com/meetup_api/docs/stream/2/event_comments/#websockets
 
 In this workshop we are going to stream all comments, for all topics, into NiFi and classify each one of them into the 5 categories listed below:
 
