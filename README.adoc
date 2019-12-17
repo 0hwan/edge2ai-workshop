@@ -113,7 +113,7 @@ image::images/browser.png[width=800]
 
 In order to have a streaming source available for our workshop, we are going to make use of the publicly available Meetup's API and connect to their WebSocket.
 
-The API documentation is available [here](https://www.meetup.com/meetup_api/docs/stream/2/event_comments/#websockets ): https://www.meetup.com/meetup_api/docs/stream/2/event_comments/#websockets
+The API documentation is available [here](https://www.meetup.com/meetup_api/docs/stream/2/event_comments/#websockets): https://www.meetup.com/meetup_api/docs/stream/2/event_comments/#websockets
 
 In this workshop we are going to stream all comments, for all topics, into NiFi and classify each one of them into the 5 categories listed below:
 
@@ -130,26 +130,10 @@ In real-world use case we would probably filter by event of our interest but for
 Let's get started... Open [NiFi UI](http://<public_dns>:8080/nifi/) and follow the steps below:
 
 - Step 1: Drag on drop a Process Group on the root canvas and name it **CDF Workshop**
-
+image::images/createProcessGroup.jpg[width=800]
 image::images/cdfprocessgroup.png[width=800]
 
-- Step 2: Go to [NiFi Registry](http://<public_dns>:18080/nifi-registry/) and create a new bucket
-  - Click on the little wrench icon at the top right corner
-  - Click on the **NEW BUCKET** button
-  - Name the bucket **workshop**
-  
-image::images/registry-bucket.png[width=800]
-
-- Step 3: Go back to NiFi UI and right click on the previously created process group
-  - Click on Version > Start version control
-  - Then provide at least a Flow Name
-  - Click on Save
-
-image::images/version-control.png[width=800]
-
-image::images/version-control-2.png[width=800]
-
-- Step 4: Get in the CDF Workshop (double click on the process group) and add a **ConnectWebSocket** processor to the canvas
+- Step 2: Get in the CDF Workshop (double click on the process group) and add a **ConnectWebSocket** processor to the canvas
   - Double click on the processor
   - On settings tab, check all relationships except **text message**
   - Got to properties tab and select or create **JettyWebSocketClient** as the WebSocket Client ControllerService
@@ -159,8 +143,13 @@ image::images/version-control-2.png[width=800]
   	- Enable the controller service (click on the thunder icon) and close the window
   - Go to properties tab and give a value to **WebSocket Client Id** such as **demo** for example
   - Apply changes
-  
-- Step 5: Add an UpdateAttribute connector to the canvas and link from ConnectWebSocket on **text message** relationship
+ image::images/entergroup.jpg[width=800]
+ image::images/addConnectWebSocketProcessor.jpg[width=800]
+ image::images/ConnectWebSocketClientService.jpg[width=800]
+ image::images/addSocketControllerService.jpg[width=800]
+ image::images/saveControllerService.jpg[width=800]
+ 
+- Step 3: Add an UpdateAttribute connector to the canvas and link from ConnectWebSocket on **text message** relationship
   - Double click on the processor
   - On properties tab add new property **mime.type** clicking on + icon and give the value **application/json**. This will tell the next processor that the messages sent by the Meetup WebSocket is in JSON format.
   - Add another property **event** to set an event name **CDF workshop** for the purpose of this exercise as explained before
