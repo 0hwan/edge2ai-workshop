@@ -143,8 +143,6 @@ Let's get started... Open [NiFi UI](http://<public_dns>:8080/nifi/) and follow t
 
 - Step 1: Drag on drop a Process Group on the root canvas and name it **CDF Workshop**
 
-image::images/createProcessGroup.jpg[width=800]
-
 image::images/cdfprocessgroup.png[width=800]
 
 - Step 2: Get in the CDF Workshop (double click on the process group) and add a **ConnectWebSocket** processor to the canvas
@@ -158,15 +156,15 @@ image::images/cdfprocessgroup.png[width=800]
   - Go to properties tab and give a value to **WebSocket Client Id** such as **demo** for example
   - Apply changes
   
- image::images/entergroup.jpg[width=800]
+image::images/entergroup.jpg[width=800]
  
- image::images/addConnectWebSocketProcessor.jpg[width=800]
+image::images/addConnectWebSocketProcessor.jpg[width=800]
  
- image::images/ConnectWebSocketClientService.jpg[width=800]
+image::images/ConnectWebSocketClientService.jpg[width=800]
  
- image::images/addSocketControllerService.jpg[width=800]
+image::images/addSocketControllerService.jpg[width=800]
  
- image::images/saveControllerService.jpg[width=800]
+image::images/saveControllerService.jpg[width=800]
  
 - Step 3: Add an UpdateAttribute connector to the canvas and link from ConnectWebSocket on **text message** relationship
   - Double click on the processor
