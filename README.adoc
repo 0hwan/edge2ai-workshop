@@ -636,7 +636,11 @@ image::images/smm.png[width=800]
 
 . Click on the *Producers* filter and select only the *`nifi-sensor-data`* producer. This will hide all the irrelevant topics and show only the ones that producer is writing to.
 
+image::images/checkProducer.png[width=800]
+
 . If you filter by *Topic* instead and select the `iot` topic, you'll be able to see all the *producers* and *consumers* that are writing to and reading from it, respectively. Since we haven't implemented any consumers yet, the consumer list should be empty.
+
+image::images/checkTopic.png[width=800]
 
 . Click on the topic to explore its details. You can see more details, metrics and the break down per partition. Click on one of the partitions and you'll see additional information and which producers and consumers interact with that partition.
 +
@@ -644,18 +648,21 @@ image::images/producers.png[width=800]
 
 . Click on the *EXPLORE* link to visualize the data in a particular partition. Confirm that there's data in the Kafka topic and it looks like the JSON produced by the sensor simulator.
 +
+image::images/explorerData.png[width=800]
+
 image::images/explore_partition.png[width=800]
 
-. Check the data from the partition. You'll notice something odd. These are readings from temperature sensors and we don't expect any of the sensors to measure temperatures greater than 150 degrees in the conditions they are used. It seems, though, that `sensor_0` and `sensor_1` are intermittently producing noise and some of the measurements have very high values for these measurements.
-+
-image::images/troubled_sensors.png[width=800]
+. Check the data from the partition. 
+
+image::images/checkPartitionData.png[width=800]
 
 . Stop the simulator with CTRL-C.
 
 . In the next Lab we'll eliminate with these problematic measurements to avoid problems later in our data flow.
 
-[[lab_6, Lab 6]]
-== Lab 6 - Update the edge flows to perform additional processing on the data
+Lab 8 - Update the edge flows to perform additional processing on the data
+==========================================================================
+
 
 In the previous lab we noticed that some of the sensors were sending erroneous measurements intermittently. If we let these measurements to be processed by our data flow we might have problems with the quality of our flow output and we want to avoid that.
 
@@ -665,7 +672,7 @@ We've noticed that the problem always happen with the temperatures in measuremen
 
 **STEP 1** :  add EvaluateJSONPath processor
 
-. Go to the CEM Web UI and add a new processor to the canvas. In the Filter box of the dialog that appears, type "JsonPath". Select the _EvaluateJSONPath_ processor and click *Add*.
+. Go to the CEM Web UI and add a new processor to the canvas. In the Filter box of the dialog that appears, type "JsonPath". Select the **EvaluateJSONPath** processor and click *Add*.
 
 . Double-click on the new processor and configure it with the following properties:
 +
@@ -692,7 +699,7 @@ image::images/extract_attributes.png[width=800]
 
 **STEP 2** :  add RouteOnAttribute processor
 
-. Drag one more new processor to the canvas. In the Filter box of the dialog that appears, type "Route". Select the _RouteOnAttribute_ processor and click *Add*.
+. Drag one more new processor to the canvas. In the Filter box of the dialog that appears, type "Route". Select the **RouteOnAttribute** processor and click *Add*.
 +
 image::images/route_on_attribute.png[width=800]
 
@@ -718,20 +725,20 @@ image::images/route_on_attribute_config.png[width=800]
 
 **STEP 3** :  connect
 
-. Reconnect the _ConsumeMQTT_ processor to the _Extract sensor_0 and sensor1 values_ processor:
-.. Click on the existing connection between _ConsumeMQTT_ and the _RPG_ to select it.
-.. Drag the destination end of the connection to the _Extract sensor_0 and sensor1 values_ processor.
+. Reconnect the **ConsumeMQTT** processor to the _Extract sensor_0 and sensor1 values_ processor:
+.. Click on the existing connection between **ConsumeMQTT** and the **RPG** to select it.
+.. Drag the destination end of the connection to the **Extract sensor_0 and sensor1 values** processor.
 +
 image::images/reconnect_consume_mqtt.png[width=800]
 
-. Connect the _Extract sensor_0 and sensor1 values_ to the _Filter errors_ processor. When the *Create Connection* dialog appear, select "*matched*" and click *Create*.
+. Connect the **Extract sensor_0 and sensor1 values** to the **Filter errors** processor. When the *Create Connection* dialog appear, select "*matched*" and click *Create*.
 +
 image::images/connect_extract_to_route.png[width-800]
 
 +
 image::images/create_connection.png[width=800]
 
-. Double-click the _Extract sensor_0 and sensor1 values_ and check the following values in the *AUTOMATICALLY TERMINATED RELATIONSHIPS* section and click *Apply*:
+. Double-click the **Extract sensor_0 and sensor1 values** and check the following values in the *AUTOMATICALLY TERMINATED RELATIONSHIPS* section and click *Apply*:
 ** failure
 ** unmatched
 ** sensor_0
@@ -740,11 +747,11 @@ image::images/create_connection.png[width=800]
 +
 image::images/terminations.png[width=800]
 
-. Before creating the last connection, you will need (again) the ID of the NiFi _Input Port_. Go to the NiFi Web UI , double-click on the "*from Gateway*" _Input Port_ and copy its ID.
+. Before creating the last connection, you will need (again) the ID of the NiFi **Input Port**. Go to the NiFi Web UI , double-click on the "*from Gateway*" **Input Port** and copy its ID.
 +
 image::images/input_port_id.png[width=800]
 
-. Back on the CEM Web UI, connect the _Filter errors_ processor to the RPG:
+. Back on the CEM Web UI, connect the **Filter errors** processor to the RPG:
 +
 image::images/connect_filter_ro_rpg.png[width=800]
 
@@ -770,7 +777,9 @@ image::images/terminate_errors.png[width=800]
 
 . Stop the simulator once you have verified the data.
 
-## Lab 7 - Using Hue create Kudu table.
+Lab 9 - Using Hue create Kudu table.
+====================================
+
 ==== Create the Kudu table
 
 . Go to the Hue Web UI and login. The first user to login to a Hue installation is automatically created and granted admin privileges in Hue.
@@ -782,6 +791,8 @@ image::images/impala_editor.png[width=800]
 **STEP 1** :  Create Kudu table
 
 . First, create the Kudu table. Login into Hue, and in the Impala Query, run this statement:
+
+image::images/openHue.png[width=800]
 +
 [source,sql]
 ----
@@ -812,7 +823,8 @@ TBLPROPERTIES ('kudu.num_tablet_replicas' = '1');
 image::images/create_table.png[width=800]
 
 
-## Lab 8 - CDSW: Train the model
+Lab 10 - CDSW: Train the model
+==============================
 
 In this and the following lab, you will wear the hat of a Data Scientist. You will write the model code, train it several times and finally deploy the model to Production. All within 30 minutes!
 
@@ -931,7 +943,8 @@ Select the run number with the best predictive value, in this case, experiment 2
 image::images/save_model.png[width=800]
 image::images/find_model.png[width=800]
 
-## Lab 9 - CDSW: Deploy the model
+Lab 11 - CDSW: Deploy the model
+===============================
 
 **STEP 1** : Examine the program `cdsw.iot_model.py`
 
@@ -983,8 +996,8 @@ Now, lets change the input parameters and call the predict function again. Put t
 ```
 With these input parameters, the model returns 0, which means that the machine is likely to break. Take a note of the **AccessKey** as you will need this for lab 10.
 
-[[lab_10, Lab 10]]
-== Lab 10 - Use NiFi to call the CDSW model endpoint and save to Kudu
+Lab 12 - Use NiFi to call the CDSW model endpoint and save to Kudu
+==================================================================
 
 In this lab, you will use NiFi to consume the Kafka messages containing the IoT data we ingested in the previous lab, call a CDSW model API endpoint to predict whether the machine where the readings came from is likely to break or not.
 
@@ -1207,7 +1220,42 @@ We're ready not to run and test our flow. Follow the steps below:
 +
 image::images/kudu_success.png[width=800]
 
-## Lab 11 - Fast analytics on fast data with Kudu and Impala
+
+Lab 13 - Use Spark to call a CDSW model endpoint and save to Kudu
+=================================================================
+
+Spark Streaming is a processing framework for (near) real-time data. In this lab, you will use Spark to consume Kafka messages which contains the IoT data from the machine, and call a CDSW model API endpoint to predict whether, with those IoT values the machine sent, the machine is likely to break. You'll then save the results to Kudu for fast analytics.
+
+**Step 1 : CDSW Access Key**
+
+1.  To configure and run the Spark Streaming job, you will need a CDSW  Access Key to connect to the model endpoint that has been deployed there. To get the Access Key, go to the CDSW Web UI and click on **Models \> Iot Prediction Model \> Settings**. Copy the Access Key.
+
+image::images/getAccessKey.png[width=800]
+
+Step 2 :Running the Spark job
+
+1.  Open a Terminal and SSH into the VM. The first is running the sensor data simulator, so you can't use it.
+[source]
+----
+ACCESS\_KEY=\<put here your cdsw model access key\>
+cd \~
+wget http://central.maven.org/maven2/org/apache/kudu/kudu-spark2\_2.11/1.9.0/kudu-spark2\_2.11-1.9.0.jar
+wget https://raw.githubusercontent.com/swordsmanliu/SparkStreamingHbase/master/lib/spark-core\_2.11-1.5.2.logging.jar
+rm -rf \~/.m2 \~/.ivy2/
+spark-submit \
+--master local\[2\] \
+--jars kudu-spark2\_2.11-1.9.0.jar,spark-core\_2.11-1.5.2.logging.jar \
+--packages org.apache.spark:spark-streaming-kafka\_2.11:1.6.3 \
+/opt/demo/spark.iot.py \$ACCESS\_KEY
+----
+
+2.  Spark Streaming will flood your screen with log messages, however,at a 5 seconds interval, you should be able to spot a table: these are the messages that were consumed from Kafka and processed by Spark. You can configure Spark for a smaller time window, however,for this exercise 5 seconds is sufficient.
+
+image::images/runSparkStream.png[width=800]
+
+Lab 14 - Fast analytics on fast data with Kudu and Impala
+=========================================================
+
 
 In this lab, you will run some SQL queries using the Impala engine. You can run a report to inform you which machines are likely to break in the near future.
 
