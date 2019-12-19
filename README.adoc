@@ -291,7 +291,7 @@ Lab 3 - Apache NiFi: setup machine sensors simulator
 
 In this lab you will run a simple Python script that simulates IoT sensor data from some hypothetical machines, and send the data to a MQTT broker (link:https://mosquitto.org/[mosquitto]). The gateway host is connected to many and different type of sensors, but they generally all share the same transport protocol, "mqtt". You will go to Apache NiFi and add a Processor (ExecuteProcess) to the canvas.   You will then right-click and set the properties shown below to run our Python simulate script.
 
-**STEP 1** : Create a ExecuteProcess Processor in Nifi
+**STEP 1** : Create a **ExecuteProcess** Processor in Nifi
 
 **Command**:   python
 
@@ -300,12 +300,11 @@ In this lab you will run a simple Python script that simulates IoT sensor data f
 image::images/simulate1.png[width=800]
 
 
-
 image::images/simulate2.png[width=800]
 
 **STEP 2** : adjust Schedule.
 
-In the Scheduling Tab, set to Run Schedule:    1 sec
+In the *Scheduling* Tab, set to *Run Schedule*:    1 sec
 
 You could set that to 1 sec, 30 sec, 1 min.
 
@@ -319,7 +318,7 @@ Include no extra spaces!
 
 *Tab:* Settings
 
-Automatically Terminate Relationships:   [x] Success
+*Automatically Terminate Relationships*:   [x] Success
 
 Make sure you terminate so you can run.
 
@@ -336,15 +335,14 @@ image::NiFiViewDataProvenance.png[width=800]
 image::NiFiDataProvenance.png[width=800]
 
 
-[[lab_2, Lab2]]
-== Lab 2 - Configuring Edge Flow Management
+Lab 4 - Configuring Edge Flow Management
+========================================
 
 Cloudera Edge Flow Management gives you a visual overview of all MiNiFi agents in your environment, and allows you to update the flow configuration for each one, with versioning control thanks to the **NiFi Registry** integration. In this lab, you will create the MiNiFi flow and publish it for the MiNiFi agent to pick it up.
 
-. Open the EFM Web UI at http://<public_dns>:10080/efm/ui/. Ensure you see your minifi agent's heartbeat messages in the **Events Monitor**.
-+
-image::images/cem_heartbeats.png[width=800]
+Open the EFM Web UI at . If the link doesn't work, back to the OS and start the efm services. **systemctl start efm**. Ensure you see your minifi agent's heartbeat messages in the **Events Monitor**.
 
+image::images/cem_heartbeats.png[width=800]
 
 image::efmEventDetails.png[width=800]
 
@@ -356,7 +354,7 @@ image::rpgCloudConfiguration.png[width=800]
 
 **STEP 1** : Add ConsumeMQTT Processor
 
-. Add a _ConsumeMQTT_ Processor to the canvas, by dragging the processor icon to the canvas, selecting the _ConsumeMQTT_ processor type and clicking on the *Add* button. Once the processor is on the canvas, double-click it and configure it with below settings:
+. Add a _ConsumeMQTT_ Processor to the canvas, by dragging the processor icon to the canvas, selecting the **ConsumeMQTT** processor type and clicking on the *Add* button. Once the processor is on the canvas, double-click it and configure it with below settings:
 +
 [source]
 ----
@@ -370,7 +368,7 @@ image::images/add_consumer_mqtt.png[width=800]
 
 **STEP 2** :  Add Remote Process Group(RPG)
 
-. Add a _Remote Process Group_ (RPG) to the canvas and configure it as follows:
+. Add a **Remote Process Group** (RPG) to the canvas and configure it as follows:
 +
 [source]
 ----
@@ -379,35 +377,35 @@ URL: http://edge2ai-1.dim.local:8080/nifi
 +
 image::images/add_rpg.png[width=800]
 
-. At this point you need to connect the ConsumerMQTT processor to the RPG. For this, you first need to add an Input Port to the remote NiFi server. Open the NiFi Web UI at `\http://<public_dns>:8080/nifi/` and drag the _Input Port_ to the canvas. Call it something like "from Gateway".
+. At this point you need to connect the **ConsumerMQTT** processor to the RPG. For this, you first need to add an **Input Port** to the remote NiFi server. Open the NiFi Web UI at `\http://<public_dns>:8080/nifi/` and drag the **Input Port** to the canvas. Call it something like "from Gateway".
 +
 image::images/add_input_port.png[width=800]
 
 **STEP 3** : Add Funnel
 
-. To terminate the NiFI _Input Port_ let's, for now, add a _Funnel_ to the canvas...
+. To terminate the NiFI **Input Port** let's, for now, add a **Funnel** to the canvas...
 +
 image::images/add_funnel.png[width=600]
 
-. ... and setup a connection from the Input Port to it. To setup a connection, hover the mouse over the Input Port until an arrow symbol is shown in the center. Click on the arrow, drag it and drop it on the Funnel to connect the two elements.
+. ... and setup a connection from the Input Port to it. To setup a connection, hover the mouse over the **Input Port** until an arrow symbol is shown in the center. Click on the arrow, drag it and drop it on the **Funnel** to connect the two elements.
 +
 image::images/connecting.png[width=800]
 
-. Right-click on the Input Port and start it. Alternatively, click on the Input Port to select it and then press the start ("play") button on the Operate panel:
+. Right-click on the **Input Port** and start it. Alternatively, click on the Input Port to select it and then press the start ("play") button on the Operate panel:
 +
 image::images/operate_panel.png[width=300]
 
-. You will need the ID of the _Input Port_ to complete the connection of the _ConsumeMQTT_ processor to the RPG (NiFi). Double-click on the _Input Port_ and copy its ID.
+. You will need the ID of the **Input Port** to complete the connection of the **ConsumeMQTT** processor to the RPG (NiFi). Double-click on the **Input Port** and copy its ID.
 +
 image::images/input_port_id.png[width=800]
 
 **STEP 4** :  Connect ComsumeMQTT to RPG
 
-. Back to the Flow Designer, connect the ConsumeMQTT processor to the RPG. The connection requires an ID and you can paste here the ID you copied from the Input Port.
+. Back to the Flow Designer, connect the **ConsumeMQTT** processor to the RPG. The connection requires an ID and you can paste here the ID you copied from the Input Port.
 +
 image::images/connect_to_rpg.png[width=800]
 
-. The Flow is now complete, but before publishing it, create the Bucket in the _NiFi Registry_ so that all versions of your flows are stored for review and audit. Open the NiFi Registry at `\http://<public_dns>:18080/nifi-registry`, click on the wrench/spanner icon (image:images/spanner_icon.png[width=20]) on the top-right corner on and create a bucket called `IoT`.
+. The Flow is now complete, but before publishing it, create the Bucket in the **NiFi Registry** so that all versions of your flows are stored for review and audit. Open the **NiFi Registry** at `\http://<public_dns>:18080/nifi-registry`, click on the wrench/spanner icon (image:images/spanner_icon.png[width=20]) on the top-right corner on and create a bucket called `IoT`.
 +
 image::images/create_bucket.png[width=800]
 
@@ -434,8 +432,8 @@ image::images/queued_events.png[width=300]
 
 . You can stop the simulator (Stop the NiFi processor) once you confirm that the flow is working correctly.
 
-[[lab_3, Lab 3]]
-== Lab 3 - Registering our schema in Schema Registry
+Lab 5 - Registering our schema in Schema Registry
+=================================================
 
 The data produced by the temperature sensors is described by the schema in file `link:https://raw.githubusercontent.com/tspannhw/edge2ai-workshop/master/sensor.avsc[sensor.avsc]`. In this lab we will register this schema in Schema Registry so that our flows in NiFi can refer to schema using an unified service. This will also allow us to evolve the schema in the future, if needed, keeping older versions under version control, so that existing flows and flowfiles will continue to work.
 
