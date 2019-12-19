@@ -153,27 +153,22 @@ image::images/addConnectWebSocketProcessor.jpg[width=800]
  
  - Double click on the processor
   - On settings tab, check all relationships except **text message**
-
-image::images/ConnectWebSocketClientService.jpg[width=800]
-
-  - Got to properties tab and select or create **JettyWebSocketClient** as the WebSocket Client ControllerService
-
-image::images/addSocketControllerService.jpg[width=800]
- 
+  - Got to properties tab and select or create **JettyWebSocketClient** as the WebSocket Client ControllerService 
  - Then configure the service (click on the arrow on the right)	
-  	- Go to properties tab and add this value: ```ws://stream.meetup.com/2/event_comments``` to property **WebSocket URI**
-
-image::images/saveControllerService.jpg[width=800]
-
+  	- Go to properties tab and add this value: ```ws://stream.meetup.com/2/event_comments``` to property **WebSocket URI*
     - Apply the change
   	- Enable the controller service (click on the thunder icon) and close the window
   - Go to properties tab and give a value to **WebSocket Client Id** such as **demo** for example
-
-
  - Apply changes
-  
-
  
+image::images/ConnectWebSocketClientService.jpg[width=800]
+
+image::images/addSocketControllerService.jpg[width=800]
+
+image::images/saveControllerService.jpg[width=800]
+
+image::images/addClientId.png[width=800]
+
 - Step 3: Add an UpdateAttribute connector to the canvas and link from ConnectWebSocket on **text message** relationship
   - Double click on the processor
   - On properties tab add new property **mime.type** clicking on + icon and give the value **application/json**. This will tell the next processor that the messages sent by the Meetup WebSocket is in JSON format.
@@ -182,7 +177,7 @@ image::images/saveControllerService.jpg[width=800]
   
 image::images/updateattibute1properties.png[width=800]
   
-- Step 6: Add EvaluateJsonPath to the canvas and link from UpdateAttribute on **success** relationship
+- Step 4: Add EvaluateJsonPath to the canvas and link from UpdateAttribute on **success** relationship
   - Double click on the processor
   - On settings tab, check both **failure** and **unmatched** relationships
   - On properties tab, change **Destination** value to **flowfile-attribute**
@@ -201,7 +196,7 @@ image::images/evaluatejsonpathproperties1.png[width=800]
     {"visibility":"public","member":{"member_id":11643711,"photo":"https:\/\/secure.meetupstatic.com\/photos\/member\/3\/1\/6\/8\/thumb_273072648.jpeg","member_name":"Loka Murphy"},"comment":"I didn’t when I registered but now thinking I want to try and get one since it’s only taking place once.","id":-259414201,"mtime":1541557753087,"event":{"event_name":"Tunnel to Viaduct 8k Run","event_id":"256109695"},"table_name":"event_comment","group":{"join_mode":"open","country":"us","city":"Seattle","name":"Seattle Green Lake Running Group","group_lon":-122.34,"id":1608555,"state":"WA","urlname":"Seattle-Greenlake-Running-Group","category":{"name":"fitness","id":9,"shortname":"fitness"},"group_photo":{"highres_link":"https:\/\/secure.meetupstatic.com\/photos\/event\/9\/e\/f\/4\/highres_465640692.jpeg","photo_link":"https:\/\/secure.meetupstatic.com\/photos\/event\/9\/e\/f\/4\/600_465640692.jpeg","photo_id":465640692,"thumb_link":"https:\/\/secure.meetupstatic.com\/photos\/event\/9\/e\/f\/4\/thumb_465640692.jpeg"},"group_lat":47.61},"in_reply_to":496130460,"status":"active"}
 ```
 
-- Step 7: Add an AttributesToCSV processor to the canvas and link from EvaluateJsonPath on **matched** relationship
+- Step 5: Add an AttributesToCSV processor to the canvas and link from EvaluateJsonPath on **matched** relationship
   - Double click on the processor
   - On settings tab, check **failure** relationship
   - Change **Destination** value to **flowfile-content**
@@ -209,24 +204,20 @@ image::images/evaluatejsonpathproperties1.png[width=800]
   - Set Include Core Attributes to **false**
   - Set **Include Schema** to **true**
   - Apply changes
-  
-- Step 8: Add a PutFile processor to the canvas and link from AttributesToCSV on **success** relationship
+
+image::images/condigAttributesToCSV.png[width=800]
+
+- Step 6: Add a PutFile processor to the canvas and link from AttributesToCSV on **success** relationship
   - Double click on the processor
   - On settings tab, check all relationships
   - Change **Directory** value to **/tmp/workshop**
   - Apply changes
 
-- Step 9: Right-click anywhere on the canvas and commit your first flow!
+- Step 7: Right-click anywhere on the canvas and commit your first flow!
 
-image::images/commit-1.png[width=800]
+image::images/startJob.png[width=800]
 
-image::images/commit-2.png[width=800]
-
-If you visit the [NiFi Registry UI](http://<public_dns>:18080/nifi-registry/) again you should see your commit.
-
-image::images/commit-3.png[width=800]
-
-- Step 10: Start the entire flow
+- Step 8: Start the entire flow
 
 image::images/flow1.png[width=800]
 
@@ -236,8 +227,67 @@ On the NiFi UI, explore the FlowFiles' attributes and content looking at Data pr
 
 **Once done, stop the flow and delete all files ```sudo rm -rf /tmp/workshop/*```**
 
-[[lab_1, Lab 1]]
-== Lab 1 - Apache NiFi: setup machine sensors simulator 
+Lab 2 - Using NiFi Registry to Manage SFDC
+==========================================
+
+Step 1：We want to be able to version control the flows we will add to the Process Group. In order to do that, we first need to connect NiFi to the **NiFi Registry**. On the NiFi global menu, click on \"Controller Services\", navigate to the \"Registry Clients\" tab and add a Registry client with the following URL( The URL use your local URL):
+
+[source]
+----
+Name: NiFi Registry
+URL:http://edge2ai-1.dim.local:18080
+----
+
+image::images/openControlSettings.png[width=800]
+
+image::images/editRegistryClient.png[width=800]
+
+Step 2: Go to [[NiFi
+Registry]{.underline}](http://demo.cloudera.com:61080/nifi-registry/explorer/grid-list) and
+create a new bucket
+
+-   Click on the little wrench icon **Settings** at the top right corner
+-   Click on the **NEW BUCKET** button
+-   Name the bucket **workshop**
+
+image::images/addNewBucket.png[width=800]
+
+Step 3: Go back to NiFi UI and right click on the previously created
+process group
+
+-   Click on Version \> Start version control
+-   Then select the Bucket name as **workshop**, created before
+-   provide at least a Flow Name
+-   Click on Save
+
+image::images/startVersionControl.png[width=800]
+
+image::images/commitVersionControl.png[width=800]
+
+Step 4: Go back to NiFi Registry and check the version info.
+-   Click NiFi Registry to ALL bucket
+-   Click the bucket Workshop to check the version info.
+
+image::images/checkVersionChange.png[width=800]
+
+Step 5: Go back to NiFi UI and modify something, then apply the Version
+control and back to NiFi Registry to check the changes.
+
+-   Modify something, like change the properties or change the
+    positions.
+-   Back to the root canvas,Right click processorgroup and then select
+    the Version-\> Commit local changes
+-   You can add some comments then save Flow Version
+-   Back to the NiFi Registry to check the version info.
+
+image::images/editFlow.png[width=800]
+
+image::images/commitVersionChange2.png[width=800]
+
+image::images/checkVersionInfo.png[width=800]
+
+Lab 3 - Apache NiFi: setup machine sensors simulator
+====================================================
 
 In this lab you will run a simple Python script that simulates IoT sensor data from some hypothetical machines, and send the data to a MQTT broker (link:https://mosquitto.org/[mosquitto]). The gateway host is connected to many and different type of sensors, but they generally all share the same transport protocol, "mqtt". You will go to Apache NiFi and add a Processor (ExecuteProcess) to the canvas.   You will then right-click and set the properties shown below to run our Python simulate script.
 
