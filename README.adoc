@@ -146,25 +146,33 @@ Let's get started... Open [NiFi UI](http://<public_dns>:8080/nifi/) and follow t
 image::images/cdfprocessgroup.png[width=800]
 
 - Step 2: Get in the CDF Workshop (double click on the process group) and add a **ConnectWebSocket** processor to the canvas
-  - Double click on the processor
-  - On settings tab, check all relationships except **text message**
-  - Got to properties tab and select or create **JettyWebSocketClient** as the WebSocket Client ControllerService
-  - Then configure the service (click on the arrow on the right)	
-  	- Go to properties tab and add this value: ```ws://stream.meetup.com/2/event_comments``` to property **WebSocket URI**
-  	- Apply the change
-  	- Enable the controller service (click on the thunder icon) and close the window
-  - Go to properties tab and give a value to **WebSocket Client Id** such as **demo** for example
-  - Apply changes
-  
+
 image::images/entergroup.jpg[width=800]
  
 image::images/addConnectWebSocketProcessor.jpg[width=800]
  
+ - Double click on the processor
+  - On settings tab, check all relationships except **text message**
+
 image::images/ConnectWebSocketClientService.jpg[width=800]
- 
+
+  - Got to properties tab and select or create **JettyWebSocketClient** as the WebSocket Client ControllerService
+
 image::images/addSocketControllerService.jpg[width=800]
  
+ - Then configure the service (click on the arrow on the right)	
+  	- Go to properties tab and add this value: ```ws://stream.meetup.com/2/event_comments``` to property **WebSocket URI**
+
 image::images/saveControllerService.jpg[width=800]
+
+    - Apply the change
+  	- Enable the controller service (click on the thunder icon) and close the window
+  - Go to properties tab and give a value to **WebSocket Client Id** such as **demo** for example
+
+
+ - Apply changes
+  
+
  
 - Step 3: Add an UpdateAttribute connector to the canvas and link from ConnectWebSocket on **text message** relationship
   - Double click on the processor
