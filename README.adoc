@@ -2,13 +2,13 @@
 
 == Introduction
 
-In this workshop, you will build a full OT to IT workflow for an **IoT Predictive Maintenance** use case. Below is the architecture diagram, showing all the components you will setup over the next 8 lab exercises. While the diagram divides the components according to their location (factory, regional or datacenter level) in this workshop all such components will reside in one single host.
+In this workshop, you will build a full OT to IT workflow for an **IoT Predictive Maintenance** use case. Below is the architecture diagram, showing all the components you will setup over the next 14 lab exercises. While the diagram divides the components according to their location (factory, regional or datacenter level) in this workshop all such components will reside in one single host.
 
 image::images/iot.png[width=800]
 
 == Troubleshooting
 
-* Everything is Case-Sensitive. 
+* Everything is **Case-Sensitive**. 
 
 ==== *MiNiFi Not Sending Messages *
 
@@ -19,13 +19,12 @@ image::images/iot.png[width=800]
 * Use User=Admin for CDSW and HUE
 * You must have HDFS User Created via HUE, Go there First
 * Check all your connections and spellings
-* Check /opt/cloudera/cem/minifi/logs/minifi-app.log if you can't find an issue
+* Check **/opt/cloudera/cem/minifi/logs/minifi-app.log** if you can't find an issue
 
 
 ==== *CEM doesn't pick up new NARs*
 
 . Delete the agent manifest manually using the EFM API:
-
 . Verify each class has the same agent manifest ID:
 +
 [source]
@@ -33,7 +32,6 @@ image::images/iot.png[width=800]
 http://hostname:10080/efm/api/agent-classes
 [{"name":"iot1","agentManifests":["agent-manifest-id"]},{"name":"iot4","agentManifests":["agent-manifest-id"]}]
 ----
-
 . Confirm the manifest doesn't have the NAR you installed
 +
 [source]
@@ -41,7 +39,6 @@ http://hostname:10080/efm/api/agent-classes
 http://hostname:10080/efm/api/agent-manifests?class=iot4
 [{"identifier":"agent-manifest-id","agentType":"minifi-java","version":"1","buildInfo":{"timestamp":1556628651811,"compiler":"JDK 8"},"bundles":[{"group":"default","artifact":"system","version":"unversioned","componentManifest":{"controllerServices":[],"processors":
 ----
-
 . Call the API endpoint:
 +
 [source]
@@ -53,33 +50,38 @@ http://hostname:10080/efm/swagger/
 
 
 ===== Labs summary:
+-   **Lab 0 -** Setup the sandbox environment and Connecting to your
+    cluster.
+-   **Lab 1 -** Configuring the NiFi flow and Consuming the Meetup RSVP
+    data
+-   **Lab 2 -** Using NiFi Registry to Manage SFDC
+-   **Lab 3 -** Apache NiFi: setup machine sensors simulator
+-   **Lab 4 -** Configuring Edge Flow Management
+-   **Lab 5 -** Registering our schema in Schema Registry
+-   **Lab 6 -** Configuring the NiFi flow and pushing data to Kafka
+-   **Lab 7 -** Use SMM to confirm that the data is flowing correctly
+-   **Lab 8 -** Update the edge flows to perform additional processing
+    on the data
+-   **Lab 9 -** Using Hue create Kudu table.
+-   **Lab 10 -** CDSW: Train the model
+-   **Lab 11 -** CDSW: Deploy the model
+-   **Lab 12 -** Use NiFi to call the CDSW model endpoint and save to
+    Kudu
+-   **Lab 13 -** Use Spark to call a CDSW model endpoint and save to
+    Kudu
+-   **Lab 14 -** Fast analytics on fast data with Kudu and Impala
+-   **Lab 15** - Use SRM to simplify Kafka Replication
 
-* *Lab 1* - Configuring the NiFi flow and Consuming the Meetup RSVP data
-* *Lab 2* - Using NiFi Registry to Manage SFDC
-* *LAB 3* - Setup IOT Sensor Data Simulator
-* *Lab 4* - Setup and Configure MiNiFi
-* *LAB 5* - Create Edge Flow Manager flow for MiNiFi
-* *Lab 6* - Configuring the NiFi flow and pushing data to Kafka
-* *Lab 7* - Registering our schema in Schema Registry 
-* *Lab 8* - Use SMM to confirm that the data is flowing correctly 
-* *Lab 9* - Use SparkStreaming to analysis data
-* *Lab 10* - Use Flink to analysis data
-* *Lab 11* - save data to Kudu and Fast analytics on fast data with Kudu and Impala.
-* *Lab 12* - Use CDSW to train your model with the Experiment feature.
-* *Lab 13* - Use CDSW to deploy the model into production with the Model feature.
-* *Lab 14* - Use NiFi to process each record, calling the **Model endpoint** and save results to **Kudu**.
-* *Lab 15* - Use SRM to simplify Kafka Replication
-
-
-=== Pre-requisites
+Pre-requisites
+==============
 
 * Laptop with a supported OS (Windows 7 not supported).
 * A modern browser like Google Chrome or Firefox (IE not supported).
 
-[[lab_0, Lab 0]]
-== Lab 0 - Setup the sandbox environment and Connecting to your cluster.
+Lab 0 - Setup the sandbox environment and Connecting to your cluster.
+=====================================================================
 
-Create a CDH+CDSW cluster or a CDP+CDSW cluster and PLEASE NOTE that due to a minor MiNiFi bug, you must comment out line systemctl restart minifi in setup.sh before running setup.sh. You will be prompted to explicitly start MiNiFi in Lab 2. Check the Troubleshooting at the end of this document for how to reset MiNiFi in case you forgot to do this step.
+Create a CDH+CDSW cluster or a CDP+CDSW cluster and PLEASE NOTE that due to a minor MiNiFi bug, I installed [mosquitto](https://mosquitto.org/) in setup.sh. If you have something wrong with MiNiFi, You will be prompted to explicitly start MiNiFi. Check the Troubleshooting at the end of this document for how to reset MiNiFi in case you forgot to do this step.
 
 You should have 2 addresses for you one-node cluster: the public DNS name and the public IP address. With those addresses you can test the following connectivity to your cluster:
 
@@ -106,8 +108,18 @@ Below a screenshot of Chrome open with 8 tabs, one for each service.
 
 image::images/browser.png[width=800]
 
-[[lab_1, Lab 1]]
-== Lab 1 -  Configuring the NiFi flow and Consuming the Meetup RSVP data
+Download the resource from github:
+[source]
+----
+git clone https://github.com/wangxf2000/edge2ai-workshop.git
+mkdir -p /tmp/demo/
+cp edge2ai-workshop/simulate.py /tmp/demo/
+chown -R nifi:nifi /tmp/demo/
+chmod +x /tmp/demo/simulate.py
+----
+
+Lab 1 - Configuring the NiFi flow and Consuming the Meetup RSVP data
+====================================================================
 
 ### Build NiFi flow
 
