@@ -242,9 +242,7 @@ image::images/openControlSettings.png[width=800]
 
 image::images/editRegistryClient.png[width=800]
 
-Step 2: Go to [[NiFi
-Registry]{.underline}](http://demo.cloudera.com:61080/nifi-registry/explorer/grid-list) and
-create a new bucket
+Step 2: Go to NiFiRegistry http://demo.cloudera.com:61080/nifi-registry/explorer/grid-list and create a new bucket
 
 -   Click on the little wrench icon **Settings** at the top right corner
 -   Click on the **NEW BUCKET** button
@@ -463,8 +461,11 @@ image::images/register_schema.png[width=800]
 
 . Save the schema
 
-[[lab_4, Lab 4]]
-== Lab 4 - Configuring the NiFi flow and pushing data to Kafka
+image::images/saveSchema.png[width=800]
+
+
+Lab 6 - Configuring the NiFi flow and pushing data to Kafka
+===========================================================
 
 In this lab, you will create a NiFi flow to receive the data from all gateways and push it to **Kafka**.
 
@@ -476,18 +477,7 @@ Before we start building our flow, let's create a Process Group to help organizi
 +
 image::images/create_pgroup.png[width=800]
 
-. We want to be able to version control the flows we will add to the Process Group. In order to do that, we first need to connect NiFi to the *NiFi Registry*. On the NiFi global menu, click on "Controller Services", navigate to the "Registry Clients" tab and add a Registry client with the following URL:
-+
-----
-Name: NiFi Registry
-URL:  http://edge2ai-1.dim.local:18080
-----
-+
-image::images/global_controller_settings.png[width=800]
-+
-image::images/add_registry_client.png[width=800]
-
-. On the *NiFi Registry* Web UI, add another bucket for storing the Sensor flow we're about to build'. Call it `SensorFlows`:
+. On the *NiFi Registry* Web UI, add another bucket for storing the Sensor flow we're about to build'. Call it **SensorFlows**:
 +
 image::images/sensor_flows_bucket.png[width=800]
 
@@ -499,6 +489,8 @@ Registry:  NiFi Registry
 Bucket:    SensorFlows
 Flow Name: SensorProcessGroup
 ----
+
+image::images/pgversion.png[width=800]
 
 . Let's also enable processors in this Process Group to use schemas stored in Schema Registry. Right-click on the Process Group, select *Configure* and navigate to the *Controller Services* tab. Click the *`+`* icon and add a *HortonworksSchemaRegistry* service. After the service is added, click on the service's _cog_ icon (image:images/cog_icon.png[width=20]), go to the *Properties* tab and configure it with the following *Schema Registry URL* and click *Apply*.
 +
@@ -530,7 +522,7 @@ Schema Access Strategy: Inherit Record Schema
 Schema Registry:        HortonworksSchemaRegistry
 ----
 
-. Enable the *JsonTreeReader* and the *JsonRecordSetWriter* Controller Services you just created, by clicking on their respective _lightning bolt_ icons (image:images/enable_icon.png[width=20]).
+. Enable the *JsonTreeReader* and the *JsonRecordSetWriter* Controller Services you just created, by clicking on their respective **lightning bolt** icons (image:images/enable_icon.png[width=20]).
 +
 image::images/controller_services.png[width=800]
 
@@ -540,13 +532,13 @@ image::images/controller_services.png[width=800]
 
 . Inside the process group, add a new _Input Port_ and name it "Sensor Data"
 
-. We need to tell NiFi which schema should be used to read and write the Sensor data. For this we'll use an _UpdateAttribute_ processor to add an attribute to the FlowFile indicating the schema name.
+. We need to tell NiFi which schema should be used to read and write the Sensor data. For this we'll use an **UpdateAttribute** processor to add an attribute to the FlowFile indicating the schema name.
 +
-Add an _UpdateAttribute_ processor by dragging the processor icon to the canvas:
+Add an **UpdateAttribute** processor by dragging the processor icon to the canvas:
 +
 image::images/add_updateattribute.png[width=800]
 
-. Double-click the _UpdateAttribute_ processor and configure it as follows:
+. Double-click the **UpdateAttribute** processor and configure it as follows:
 .. In the _SETTINGS_ tab:
 +
 [source]
@@ -565,7 +557,7 @@ Property Value: SensorReading
 
 . Connect the *Sensor Data* input port to the *Set Schema Name* processor.
 
-. Add a _PublishKafkaRecord_2.0_ processor and configure it as follows:
+. Add a **PublishKafkaRecord_2.0** processor and configure it as follows:
 +
 *SETTINGS* tab:
 +
@@ -586,9 +578,9 @@ Use Transactions:                      false
 Attributes to Send as Headers (Regex): schema.*
 ----
 +
-NOTE: Make sure you use the PublishKafkaRecord_2.0 processor and *not* the PublishKafka_2.0 one
+**NOTE**: Make sure you use the **PublishKafkaRecord_2.0** processor and *not* the PublishKafka_2.0 one
 
-. While still in the _PROPERTIES_ tab of the _PublishKafkaRecord_2.0_ processor, click on the image:images/plus_button.png[width=25] button and add the following property:
+. While still in the **PROPERTIES** tab of the **PublishKafkaRecord_2.0** processor, click on the image:images/plus_button.png[width=25] button and add the following property:
 +
 [source]
 ----
@@ -622,7 +614,7 @@ image::images/connect_input.png[width=800]
 +
 image::images/to_input.png[width=800]
 
-. Refresh the screen (`Ctrl+R` on Linux/Windows; `Cmd+R` on Mac) and you should see that the records that were queued on the "*from Gateway*" Input Port disappeared. They flowed into the *Process Sensor Data* flow. If you expand the Process Group you should see that those records were processed by the _PublishKafkaRecord_ processor and there should be no records queued on the "failure" output queue.
+. Refresh the screen (`Ctrl+R` on Linux/Windows; `Cmd+R` on Mac) and you should see that the records that were queued on the "*from Gateway*" Input Port disappeared. They flowed into the *Process Sensor Data* flow. If you expand the Process Group you should see that those records were processed by the **PublishKafkaRecord** processor and there should be no records queued on the "failure" output queue.
 +
 image::images/kafka_success.png[width=800]
 +
@@ -630,14 +622,13 @@ At this point, the messages are already in the Kafka topic. You can add more pro
 
 . To complete this Lab, let's commit and version the work we've just done. Go back to the NiFi root canvas, clicking on the "Nifi Flow" breadcrumb. Right-click on the *Process Sensor Data* Process Group and select *Version > Commit local changes*. Enter a descriptive comment and save.
 
-[[lab_5, Lab 5]]
-== Lab 5 - Use SMM to confirm that the data is flowing correctly
+Lab 7 - Use SMM to confirm that the data is flowing correctly
+=============================================================
 
 Now that our NiFi flow is pushing data to Kafka, it would be good to have a confirmation that everything is running as expected. In this lab you will use Streams Messaging Manager (SMM) to check and monitor Kafka.
 
 . Start the (NiFi ExecuteProcess) simulator again and confirm you can see the messages queued in NiFi. Leave it running.
 +
-
 
 . Go to the Stream Messaging Manager (SMM) Web UI and familiarize yourself with the options there. Notice the filters (blue boxes) at the top of the screen.
 +
