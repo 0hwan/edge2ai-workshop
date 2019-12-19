@@ -142,6 +142,7 @@ In real-world use case we would probably filter by event of our interest but for
 Let's get started... Open [NiFi UI](http://<public_dns>:8080/nifi/) and follow the steps below:
 
 - Step 1: Drag on drop a Process Group on the root canvas and name it **CDF Workshop**
+
 image::images/createProcessGroup.jpg[width=800]
 image::images/cdfprocessgroup.png[width=800]
 
@@ -155,6 +156,7 @@ image::images/cdfprocessgroup.png[width=800]
   	- Enable the controller service (click on the thunder icon) and close the window
   - Go to properties tab and give a value to **WebSocket Client Id** such as **demo** for example
   - Apply changes
+  
  image::images/entergroup.jpg[width=800]
  image::images/addConnectWebSocketProcessor.jpg[width=800]
  image::images/ConnectWebSocketClientService.jpg[width=800]
