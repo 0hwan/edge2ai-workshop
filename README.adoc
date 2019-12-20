@@ -291,7 +291,7 @@ In this lab you will run a simple Python script that simulates IoT sensor data f
 
 **Command**:   python
 
-**Command Arguments: **  /opt/demo/simulate.py
+**Command Arguments: **  /tmp/demo/simulate.py
 
 image::images/simulate1.png[width=800]
 
