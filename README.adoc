@@ -365,6 +365,7 @@ image::images/add_consumer_mqtt.png[width=800]
 [source]
 ----
 URL: http://edge2ai-1.dim.local:8080/nifi
+Transport Protocol: HTTP
 ----
 +
 image::images/add_rpg.png[width=800]
